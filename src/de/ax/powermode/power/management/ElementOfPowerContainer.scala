@@ -24,7 +24,7 @@ import com.intellij.openapi.editor.event.{DocumentAdapter, DocumentEvent}
 import com.intellij.openapi.editor.{Editor, ScrollingModel}
 import de.ax.powermode._
 import de.ax.powermode.power.ElementOfPower
-import de.ax.powermode.power.element.{PowerBam, PowerFlame, PowerIndicator, PowerSpark}
+import de.ax.powermode.power.element.{PowerBam, PowerFlame, PowerIndicator, PowerSpark, DyingCat}
 
 import scala.collection.JavaConversions._
 
@@ -84,6 +84,18 @@ class ElementOfPowerContainer(editor: Editor) extends JComponent with ComponentL
             e.getNewFragment.toString.count('\n' == _) > 1
 
         }
+
+        val cursor = editor.getCaretModel.getCurrentCaret.getVisualPosition
+        val line = editor.getDocument.getText.split("\n"){cursor.getLine}.substring(0, cursor.getColumn + 1)
+
+        val shouldKillCat = {
+          line.matches("(^|\\s*)(echo|print)(\\s*|\\()")
+        }
+
+        if (shouldKillCat) {
+          initializeCatExecution()
+        }
+
         if (shouldAnimate) {
           val width = {
             val l = (e.getOldFragment.toString + e.getNewFragment.toString).split("\n")
@@ -142,6 +154,7 @@ class ElementOfPowerContainer(editor: Editor) extends JComponent with ComponentL
     if (powerMode.isShakeEnabled) {
       doShake(shakeComponents)
     }
+
     repaint()
   }
 
@@ -283,5 +296,9 @@ class ElementOfPowerContainer(editor: Editor) extends JComponent with ComponentL
       //      }
     }
 
+  }
+
+  def initializeCatExecution(): Unit = {
+    elementsOfPower :+= (DyingCat(0, 0, 500, 500, 1000 * powerMode.valueFactor toLong), getScrollPosition)
   }
 }

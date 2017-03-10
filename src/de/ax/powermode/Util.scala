@@ -76,4 +76,19 @@ object Util {
     p
   }
 
+  lazy val dyingCatImage = {
+    val imgFile = ImageIO.read(Util.getClass.getResourceAsStream("/cat/dead.png"))
+
+    val bufferedImage = new BufferedImage(imgFile.getWidth, imgFile.getHeight, BufferedImage.TYPE_INT_ARGB)
+    val graphics = bufferedImage.getGraphics
+    graphics.drawImage(imgFile, 0, 0, null)
+
+    val graphics2D = bufferedImage.createGraphics()
+    graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f))
+
+    val at = AffineTransform.getScaleInstance(imgFile.getWidth, imgFile.getWidth)
+    graphics2D.drawRenderedImage(bufferedImage, at)
+    bufferedImage
+  }
+
 }
